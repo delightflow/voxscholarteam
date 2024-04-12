@@ -7,7 +7,7 @@ from st_audiorec import st_audiorec
 import audio
 if __name__ == '__main__':
     # call main function
-    audio.audiorec_demo_app()
+    audio.audiorec_demo_app(key="unique_audio_recorder_1")
 
 import column12
 
