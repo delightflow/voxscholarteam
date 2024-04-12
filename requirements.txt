@@ -6,4 +6,7 @@ streamlit-audiorec
 scikit-learn
 Pillow
 plotly
+
+openai
 whisper
+openai-whisper
