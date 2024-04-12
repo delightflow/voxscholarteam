@@ -20,8 +20,9 @@ st.markdown('''<style>.css-v37k9u a {color: #ff4c4b;}</style>''',
 st.markdown('''<style>.css-nlntq9 a {color: #ff4c4b;}</style>''',
             unsafe_allow_html=True)  # lightmode
 
+api_key = st.secrets["google_api_key"]
 # Google Cloud 클라이언트 설정
-client = speech.SpeechClient()
+client = speech.SpeechClient(api_key)
 
 def transcribe_google(audio_bytes):
     """Google Cloud Speech-to-Text를 사용하여 오디오 바이트를 텍스트로 변환합니다."""
