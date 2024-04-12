@@ -16,12 +16,13 @@ import webinput
 
 import audio 
 
-import search
 
-if st.button("음성 녹음 시작"):
+
+if 'recording_started' not in st.session_state:
+    st.session_state.recording_started = False
+
+if st.button("음성 녹음 시작", key='start_rec'):
+    st.session_state.recording_started = True
+
+if st.session_state.recording_started:
     audio.audiorec_demo_app()
-
-if 'transcribed_text' in st.session_state:
-    st.text_area("Transcribed Text", st.session_state.transcribed_text, height=150)
-    if st.button("Analyze with GPT"):
-        search.display_gpt_response()

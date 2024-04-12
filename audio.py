@@ -4,7 +4,7 @@ import json
 from google.cloud import speech
 
 from google.oauth2 import service_account
-
+import openai
 # Load the JSON secret
 service_account_info = {
     "type": st.secrets["type"],
@@ -18,6 +18,7 @@ service_account_info = {
     "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
     "client_x509_cert_url": st.secrets["client_x509_cert_url"]
 }
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Create the SpeechClient with the loaded credentials
 credentials = service_account.Credentials.from_service_account_info(service_account_info)
@@ -38,7 +39,14 @@ st.markdown('''<style>.css-v37k9u a {color: #ff4c4b;}</style>''',
 st.markdown('''<style>.css-nlntq9 a {color: #ff4c4b;}</style>''',
             unsafe_allow_html=True)  # lightmode
 
-
+def query_gpt(text, model="text-davinci-002"):
+    """OpenAI GPT를 사용하여 주어진 텍스트에 대한 쿼리를 실행하고 결과를 반환합니다."""
+    response = openai.Completion.create(
+        engine=model,
+        prompt=text,
+        max_tokens=150
+    )
+    return response.choices[0].text.strip()
 
 def transcribe_google(audio_bytes):
     """Google Cloud Speech-to-Text를 사용하여 오디오 바이트를 텍스트로 변환합니다."""
@@ -68,4 +76,6 @@ def audiorec_demo_app():
 
         transcription = transcribe_google(wav_audio_data)
         st.text_area("Transcription", transcription, height=100)
+        response_text = query_gpt(transcription)
+        st.text_area("GPT Response", response_text, height=150)
 
