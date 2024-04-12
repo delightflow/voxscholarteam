@@ -2,7 +2,7 @@ from st_audiorec import st_audiorec
 import streamlit as st 
 
 from google.cloud import speech
-from pydub import AudioSegment
+
 
 
 # DESIGN implement changes to the standard streamlit UI/UX
