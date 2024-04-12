@@ -1,9 +1,27 @@
 from st_audiorec import st_audiorec
 import streamlit as st 
-
+import json
 from google.cloud import speech
 
+from google.oauth2 import service_account
 
+# Load the JSON secret
+service_account_info = {
+    "type": st.secrets["type"],
+    "project_id": st.secrets["project_id"],
+    "private_key_id": st.secrets["private_key_id"],
+    "private_key": st.secrets["private_key"],
+    "client_email": st.secrets["client_email"],
+    "client_id": st.secrets["client_id"],
+    "auth_uri": st.secrets["auth_uri"],
+    "token_uri": st.secrets["token_uri"],
+    "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
+    "client_x509_cert_url": st.secrets["client_x509_cert_url"]
+}
+
+# Create the SpeechClient with the loaded credentials
+credentials = service_account.Credentials.from_service_account_info(service_account_info)
+client = speech.SpeechClient(credentials=credentials)
 
 # DESIGN implement changes to the standard streamlit UI/UX
 # --> optional, not relevant for the functionality of the component!
@@ -20,9 +38,7 @@ st.markdown('''<style>.css-v37k9u a {color: #ff4c4b;}</style>''',
 st.markdown('''<style>.css-nlntq9 a {color: #ff4c4b;}</style>''',
             unsafe_allow_html=True)  # lightmode
 
-api_key = st.secrets["google_api_key"]
-# Google Cloud 클라이언트 설정
-client = speech.SpeechClient(api_key)
+
 
 def transcribe_google(audio_bytes):
     """Google Cloud Speech-to-Text를 사용하여 오디오 바이트를 텍스트로 변환합니다."""
