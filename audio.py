@@ -1,6 +1,7 @@
 from st_audiorec import st_audiorec
 import streamlit as st 
 
+
 # DESIGN implement changes to the standard streamlit UI/UX
 # --> optional, not relevant for the functionality of the component!
 
@@ -51,6 +52,3 @@ def audiorec_demo_app():
             st.audio(wav_audio_data, format='audio/wav')
 
 
-if __name__ == '__main__':
-    # call main function
-    audiorec_demo_app()
