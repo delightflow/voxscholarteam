@@ -56,4 +56,5 @@ def audiorec_demo_app():
 
 
 
-audiorec_demo_app()
+if __name__ == "__main__":
+    audiorec_demo_app()
