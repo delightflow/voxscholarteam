@@ -5,3 +5,4 @@ matplotlib
 streamlit-audiorec
 scikit-learn
 Pillow
+plotly
