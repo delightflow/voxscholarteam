@@ -69,5 +69,3 @@ def audiorec_demo_app():
         transcription = transcribe_google(wav_audio_data)
         st.text_area("Transcription", transcription, height=100)
 
-if __name__ == "__main__":
-    audiorec_demo_app()
