@@ -40,7 +40,7 @@ def transcribe(audio_bytes):
 def audiorec_demo_app():
 
 
-    wav_audio_data = st_audiorec(key="unique_audio_recorder_1")
+    wav_audio_data = st_audiorec()
 
     # add some spacing and informative messages
 
