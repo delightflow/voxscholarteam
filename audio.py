@@ -39,15 +39,19 @@ st.markdown('''<style>.css-v37k9u a {color: #ff4c4b;}</style>''',
 st.markdown('''<style>.css-nlntq9 a {color: #ff4c4b;}</style>''',
             unsafe_allow_html=True)  # lightmode
 
+import openai
+
 def query_gpt(text, model="text-davinci-002"):
     """Query OpenAI GPT using the provided text and return the response."""
     openai.api_key = st.secrets["OPENAI_API_KEY"]
     
-    response = openai.ChatCompletion.create(
+    response = openai.Completion.create(
         model=model,
-        messages=[{"role": "user", "content": text}]
+        prompt=text,
+        max_tokens=150
     )
-    return response.choices[0].message['content'].strip()
+    return response.choices[0].text.strip()
+
 
 def transcribe_google(audio_bytes):
     """Google Cloud Speech-to-Text를 사용하여 오디오 바이트를 텍스트로 변환합니다."""
