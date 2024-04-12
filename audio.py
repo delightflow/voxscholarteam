@@ -22,7 +22,7 @@ st.markdown('''<style>.css-v37k9u a {color: #ff4c4b;}</style>''',
 st.markdown('''<style>.css-nlntq9 a {color: #ff4c4b;}</style>''',
             unsafe_allow_html=True)  # lightmode
 
-model = whisper.load_model("base") 
+model = whisper.load_model("small") 
 
 
 
