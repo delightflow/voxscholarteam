@@ -2,9 +2,7 @@ streamlit-audiorec
 scikit-learn
 Pillow
 plotly
-pydub
 openai
-pyaudio
 whisper
 openai-whisper
 soundfile
