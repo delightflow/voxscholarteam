@@ -16,11 +16,7 @@ wordcloud
 matplotlib
 streamlit
 numpy
-datetime
-base64
-os
 gTTS
-json
 langchain
 langchain_experimental
 environ
