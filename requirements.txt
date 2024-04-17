@@ -15,7 +15,6 @@ pandas
 wordcloud
 matplotlib
 streamlit
-st_audiorec
 numpy
 datetime
 base64
