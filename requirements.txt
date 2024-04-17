@@ -4,7 +4,6 @@ Pillow
 plotly
 openai
 soundfile
-audiorecorder
 selenium
 webdriver_manager
 pandas
