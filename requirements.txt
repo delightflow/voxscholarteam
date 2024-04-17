@@ -6,7 +6,6 @@ openai
 whisper
 openai-whisper
 soundfile
-pipwin
 audiorecorder
 selenium
 webdriver_manager
@@ -18,4 +17,3 @@ numpy
 gTTS
 langchain
 langchain_experimental
-environ
