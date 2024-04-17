@@ -13,16 +13,12 @@ selenium
 webdriver_manager
 time
 pandas
-openai
 wordcloud
 matplotlib
 streamlit
 st_audiorec
-audiorecorder
-plotly
 numpy
 datetime
-Pillow
 base64
 os
 gTTS
