@@ -13,7 +13,7 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import streamlit as st
 from st_audiorec import st_audiorec
-from audiorecorder import audiorecorder
+# from audiorecorder import audiorecorder
 import plotly.graph_objects as go
 import numpy as np
 from datetime import datetime
@@ -25,11 +25,13 @@ import plotly.graph_objects as go
 import json
 from langchain import OpenAI
 from langchain_experimental.agents import create_pandas_dataframe_agent
-import environ
+import requests
+
+
 
 def main():
     st.set_page_config(
-        page_title="we-are-crawling-the-trends",
+        page_title="Articlend",
         layout="wide")
 
     # session state 초기화
@@ -228,50 +230,85 @@ def main():
         plt.savefig('word_cloud.png')
         print('워드클라우드 만들기 성공')
     st.session_state['search'] = ""
+    
+    
+
+
+    def send_slack_message(message):
+        hook_url = "https://hooks.slack.com/services/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" 
+        headers = {'Content-type': 'application/json'}
+        data = {
+            "text": message
+        }
+        response = requests.post(hook_url, headers=headers, json=data)
+        if response.status_code != 200:
+            raise ValueError(f"Slack request returned an error {response.status_code}, the response is:\n{response.text}")
+
+    def format_bestseller_message(index, row):
+
+        return f"번호: {index + 1}\n제목: {row['제목']}\n저자: {row['저자']}\n초록: {row['초록']}\n게재일: {row['게재일']}\n한줄요약: {row['한 줄 요약']}\n키워드: {row['키워드']}"
+
+    
+    df = pd.read_csv('crawl.csv')
+
+    # Streamlit app
+    st.title("슬랙으로 보내기")
+    button_clicked = st.button("전송 시작")
+    if button_clicked:
+        # 전체 데이터셋 순회
+        st.write("전송 중...예상 시간 1초/개")
+        for index, row in df.iterrows():
+            message = format_bestseller_message(index, row)
+            send_slack_message(message)
+            progress_message = f"진행 중... ({index+1}/{len(df)})"  # 진행 상황 메시지 생성
+            st.write(progress_message)
+            time.sleep(1)
+        st.write("전송 완료! ")
+
 #----------------------------------
-    flag_start = False
+    # flag_start = False
     
-    openai.api_key = st.secrets["OPENAI_API_KEY"]
+    # openai.api_key = st.secrets["OPENAI_API_KEY"]
     
-    def STT(audio):
-        filename='input.mp3'
-        wav_file = open(filename, "wb")
-        wav_file.write(audio.tobytes())
-        wav_file.close()
+    # def STT(audio):
+    #     filename='input.mp3'
+    #     wav_file = open(filename, "wb")
+    #     wav_file.write(audio.tobytes())
+    #     wav_file.close()
     
-        # 음원 파일 열기
-        audio_file = open(filename, "rb")
-        # Whisper 적용!!!
-        transcript = openai.Audio.transcribe("whisper-1", audio_file)
-        audio_file.close()
-        # 파일 삭제
-        os.remove(filename)
-        return transcript["text"]
+    #     # 음원 파일 열기
+    #     audio_file = open(filename, "rb")
+    #     # Whisper 적용!!!
+    #     transcript = openai.Audio.transcribe("whisper-1", audio_file)
+    #     audio_file.close()
+    #     # 파일 삭제
+    #     os.remove(filename)
+    #     return transcript["text"]
     
-    def ask_gpt(prompt):
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=prompt)
-        return response.choices[0].message['content']
+    # def ask_gpt(prompt):
+    #     response = openai.ChatCompletion.create(
+    #         model="gpt-4",
+    #         messages=prompt)
+    #     return response.choices[0].message['content']
     
-    def TTS(response):
-        # gTTS 를 활용하여 음성 파일 생성
-        filename = "output.mp3"
-        tts = gTTS(text=response,lang="ko")
-        tts.save(filename)
+    # def TTS(response):
+    #     # gTTS 를 활용하여 음성 파일 생성
+    #     filename = "output.mp3"
+    #     tts = gTTS(text=response,lang="ko")
+    #     tts.save(filename)
     
-        # 음원 파일 자동 재생
-        with open(filename, "rb") as f:
-            data = f.read()
-            b64 = base64.b64encode(data).decode()
-            md = f"""
-                <audio autoplay="True">
-                <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-                </audio>
-                """
-            st.markdown(md,unsafe_allow_html=True,)
-        # 파일 삭제
-        os.remove(filename)
+    #     # 음원 파일 자동 재생
+    #     with open(filename, "rb") as f:
+    #         data = f.read()
+    #         b64 = base64.b64encode(data).decode()
+    #         md = f"""
+    #             <audio autoplay="True">
+    #             <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+    #             </audio>
+    #             """
+    #         st.markdown(md,unsafe_allow_html=True,)
+    #     # 파일 삭제
+    #     os.remove(filename)
     # ---------------------------------------
     def process_csv(file):
         df = pd.read_csv(file)
@@ -289,53 +326,53 @@ def main():
         if os.path.exists(file_path):
             img2 = Image.open(file_path)
             st.image(img2, width=350)
-    with col2:
-        st.subheader("어떤 것이 궁금한가요?")
-        # 음성 녹음 아이콘
+    # with col2:
+    #     st.subheader("어떤 것이 궁금한가요?")
+    #     # 음성 녹음 아이콘
         
-        audio = audiorecorder("🐣여기를 클릭하여 말하십쇼~🐣", "👾말하기가 끝나면 누르십쇼~👾")
-        if len(audio) > 0 and not np.array_equal(audio,st.session_state["check_audio"]):
-            # 음성 재생 
-            st.audio(audio.tobytes())
-            # 음원 파일에서 텍스트 추출
-            question = STT(audio)
-            # 채팅을 시각화하기 위해 질문 내용 저장
-            now = datetime.now().strftime("%H:%M")
-            st.session_state["chat"] = st.session_state["chat"]+ [("user",now, question)]
-            # GPT 모델에 넣을 프롬프트를 위해 질문 내용 저장
-            st.session_state["messages"] = st.session_state["messages"]+ [{"role": "user", "content": question}]
-            # audio 버퍼 확인을 위해 현 시점 오디오 정보 저장
-            st.session_state["check_audio"] = audio
-            flag_start =True
+    #     audio = audiorecorder("🐣여기를 클릭하여 말하십쇼~🐣", "👾말하기가 끝나면 누르십쇼~👾")
+    #     if len(audio) > 0 and not np.array_equal(audio,st.session_state["check_audio"]):
+    #         # 음성 재생 
+    #         st.audio(audio.tobytes())
+    #         # 음원 파일에서 텍스트 추출
+    #         question = STT(audio)
+    #         # 채팅을 시각화하기 위해 질문 내용 저장
+    #         now = datetime.now().strftime("%H:%M")
+    #         st.session_state["chat"] = st.session_state["chat"]+ [("user",now, question)]
+    #         # GPT 모델에 넣을 프롬프트를 위해 질문 내용 저장
+    #         st.session_state["messages"] = st.session_state["messages"]+ [{"role": "user", "content": question}]
+    #         # audio 버퍼 확인을 위해 현 시점 오디오 정보 저장
+    #         st.session_state["check_audio"] = audio
+    #         flag_start =True
 
-    with col3:
-        st.subheader("질문/답변")
-        if flag_start:
-            #ChatGPT에게 답변 얻기
-            response = ask_gpt(st.session_state["messages"])
+    # with col3:
+    #     st.subheader("질문/답변")
+    #     if flag_start:
+    #         #ChatGPT에게 답변 얻기
+    #         response = ask_gpt(st.session_state["messages"])
 
-            # GPT 모델에 넣을 프롬프트를 위해 답변 내용 저장
-            st.session_state["messages"] = st.session_state["messages"]+ [{"role": "system", "content": response}]
+    #         # GPT 모델에 넣을 프롬프트를 위해 답변 내용 저장
+    #         st.session_state["messages"] = st.session_state["messages"]+ [{"role": "system", "content": response}]
 
-            # 채팅 시각화를 위한 답변 내용 저장
-            now = datetime.now().strftime("%H:%M")
-            prompt = [{"role": "system", "content": "You are an analytical assistant capable of understanding detailed CSV data."},
-                    {"role": "user", "content": process_csv('arxiv_crawling.csv')},
-                    {"role": "user", "content": question}]
-            response = ask_gpt(prompt)
-            st.session_state["chat"].append(("bot", now, response))
+    #         # 채팅 시각화를 위한 답변 내용 저장
+    #         now = datetime.now().strftime("%H:%M")
+    #         prompt = [{"role": "system", "content": "You are an analytical assistant capable of understanding detailed CSV data."},
+    #                 {"role": "user", "content": process_csv('arxiv_crawling.csv')},
+    #                 {"role": "user", "content": question}]
+    #         response = ask_gpt(prompt)
+    #         st.session_state["chat"].append(("bot", now, response))
 
-            # 채팅 형식으로 시각화 하기
-            for sender, Time, message in st.session_state["chat"]:
-                if sender == "user":
-                    st.write(f'<div style="display:flex;align-items:center;"><div style="background-color:#007AFF;color:white;border-radius:12px;padding:8px 12px;margin-right:8px;">{message}</div><div style="font-size:0.8rem;color:gray;">{Time}</div></div>', unsafe_allow_html=True)
-                    st.write("")
-                else:
-                    st.write(f'<div style="display:flex;align-items:center;justify-content:flex-end;"><div style="background-color:lightgray;border-radius:12px;padding:8px 12px;margin-left:8px;">{message}</div><div style="font-size:0.8rem;color:gray;">{Time}</div></div>', unsafe_allow_html=True)
-                    st.write("")
+    #         # 채팅 형식으로 시각화 하기
+    #         for sender, Time, message in st.session_state["chat"]:
+    #             if sender == "user":
+    #                 st.write(f'<div style="display:flex;align-items:center;"><div style="background-color:#007AFF;color:white;border-radius:12px;padding:8px 12px;margin-right:8px;">{message}</div><div style="font-size:0.8rem;color:gray;">{Time}</div></div>', unsafe_allow_html=True)
+    #                 st.write("")
+    #             else:
+    #                 st.write(f'<div style="display:flex;align-items:center;justify-content:flex-end;"><div style="background-color:lightgray;border-radius:12px;padding:8px 12px;margin-left:8px;">{message}</div><div style="font-size:0.8rem;color:gray;">{Time}</div></div>', unsafe_allow_html=True)
+    #                 st.write("")
             
-            # gTTS 를 활용하여 음성 파일 생성 및 재생
-            TTS(response)
+    #         # gTTS 를 활용하여 음성 파일 생성 및 재생
+    #         TTS(response)
     # ---------------------------------
     st.markdown("---")
 

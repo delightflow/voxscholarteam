@@ -4,7 +4,7 @@ import time
 import streamlit as st
 
 def send_slack_message(message):
-  url = "https://hooks.slack.com/services/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" 
+  url = "https://hooks.slack.com/services/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" 
   headers = {'Content-type': 'application/json'}
   data = {
     "text": message
