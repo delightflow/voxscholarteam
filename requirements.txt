@@ -4,10 +4,11 @@ Pillow
 plotly
 pydub
 openai
+pyaudio
 whisper
 openai-whisper
 soundfile
-google-cloud-speech
+pipwin
 audiorecorder
 selenium
 webdriver_manager
